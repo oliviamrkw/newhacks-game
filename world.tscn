@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=4 uid="uid://dwl6wqt4y6516"]
+
+[ext_resource type="PackedScene" uid="uid://ciw65cxsc4lpo" path="res://scenes/player.tscn" id="2_3qg3n"]
+[ext_resource type="TileSet" uid="uid://qg3568yc16eb" path="res://assets/tileset/floor_tiles.tres" id="3_7dq8y"]
+
+[node name="Game" type="Node2D"]
+position = Vector2(157, 91)
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("3_7dq8y")
+format = 2
+
+[node name="TileMapLayer" type="TileMapLayer" parent="TileMap"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAD+/wAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAD9/wAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAD8/wAAAAAAAAAAAAD7/wAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAD6/wAAAAAAAAAAAAAKAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAANAAAAAAAAAAAAAAAQAP7/AAAAAAAAAAARAP7/AAAAAAAAAAAPAP7/AAAAAAAAAAA=")
+tile_set = ExtResource("3_7dq8y")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Player" parent="World" instance=ExtResource("2_3qg3n")]
+position = Vector2(8, -7)
