@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=4 uid="uid://wi1ow0nx5qyq"]
+
+[ext_resource type="TileSet" uid="uid://qg3568yc16eb" path="res://assets/tileset/floor_tiles.tres" id="1_pj62j"]
+[ext_resource type="PackedScene" uid="uid://ciw65cxsc4lpo" path="res://scenes/player.tscn" id="2_6u4pk"]
+[ext_resource type="Script" path="res://scenes/player.gd" id="3_hcky2"]
+
+[node name="Game" type="Node2D"]
+position = Vector2(157, 91)
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("1_pj62j")
+format = 2
+
+[node name="TileMapLayer" type="TileMapLayer" parent="TileMap"]
+scale = Vector2(0.5, 0.5)
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAD+/wAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAD9/wAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAD8/wAAAAAAAAAAAAD7/wAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAD6/wAAAAAAAAAAAAAKAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAANAAAAAAAAAAAAAAAQAP7/AAAAAAAAAAARAP7/AAAAAAAAAAAPAP7/AAAAAAAAAAA=")
+tile_set = ExtResource("1_pj62j")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Player" parent="World" instance=ExtResource("2_6u4pk")]
+position = Vector2(8, -7)
+script = ExtResource("3_hcky2")

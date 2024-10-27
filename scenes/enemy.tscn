@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://bgu53cufin7sb"]
+
+[ext_resource type="Script" path="res://scenes/enemy.gd" id="1_ac6x7"]
+[ext_resource type="Texture2D" uid="uid://cm17tcfpyl01y" path="res://scenes/enemy_sprite.png" id="2_jwhnp"]
+[ext_resource type="Script" path="res://scenes/area_2d.gd" id="3_jkplb"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_l375n"]
+vertices = PackedVector2Array(310, 9.96094, 310, 170, 10.9531, 170, 10.0469, 9.03125)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(320, 0, 320, 180, 1, 180, 0, -1)])
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0rufb"]
+radius = 5.0
+
+[node name="enemy" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_ac6x7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_jwhnp")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_postprocessing = 1
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_l375n")
+
+[node name="Area2D" type="Area2D" parent="."]
+disable_mode = 2
+script = ExtResource("3_jkplb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_0rufb")

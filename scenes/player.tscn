@@ -1,0 +1,228 @@
+[gd_scene load_steps=28 format=3 uid="uid://ciw65cxsc4lpo"]
+
+[ext_resource type="Texture2D" uid="uid://bqium8xgmgurn" path="res://assets/player/player.png" id="1_a0puq"]
+[ext_resource type="Texture2D" uid="uid://duagqsnjh5s12" path="res://assets/player/fall_animation/mc_jump8.png" id="2_8fki2"]
+[ext_resource type="Texture2D" uid="uid://ds867na2m7bp2" path="res://assets/player/fall_animation/mc_jump9.png" id="3_agddf"]
+[ext_resource type="Texture2D" uid="uid://dtc4ofnp8fwk5" path="res://assets/player/jump_animation/mc_jump1.png" id="3_w5m6h"]
+[ext_resource type="Texture2D" uid="uid://bgi6wy3p11jqg" path="res://assets/player/fall_animation/mc_jump10.png" id="4_erp7x"]
+[ext_resource type="Texture2D" uid="uid://dy85hnifcbtm1" path="res://assets/player/jump_animation/mc_jump2.png" id="4_gxfl5"]
+[ext_resource type="Texture2D" uid="uid://cf3yj4lgexapi" path="res://assets/player/fall_animation/mc_jump11.png" id="5_f50q6"]
+[ext_resource type="Texture2D" uid="uid://cdip2kfh1cqy3" path="res://assets/player/jump_animation/mc_jump3.png" id="5_glw4o"]
+[ext_resource type="Texture2D" uid="uid://cja1kmgynuw6s" path="res://assets/player/walk_animation/mc_walk1.png" id="6_bui2a"]
+[ext_resource type="Texture2D" uid="uid://q2swbv0cq2b8" path="res://assets/player/jump_animation/mc_jump4.png" id="6_i763t"]
+[ext_resource type="Texture2D" uid="uid://cm3rcdryk050i" path="res://assets/player/fall_animation/mc_jump12.png" id="6_oiab2"]
+[ext_resource type="Texture2D" uid="uid://b8m1ehikoxs2m" path="res://assets/player/jump_animation/mc_jump5.png" id="7_n77ga"]
+[ext_resource type="Texture2D" uid="uid://cfq308yu6qa4a" path="res://assets/player/walk_animation/mc_walk2.png" id="7_syu2d"]
+[ext_resource type="Texture2D" uid="uid://colmechcaynol" path="res://assets/player/walk_animation/mc_walk3.png" id="8_nh70e"]
+[ext_resource type="Texture2D" uid="uid://ojfgdk4dxu8p" path="res://assets/player/jump_animation/mc_jump6.png" id="8_w3nxg"]
+[ext_resource type="Texture2D" uid="uid://cmvdum5aijvvv" path="res://assets/player/walk_animation/mc_walk4.png" id="9_2w3ah"]
+[ext_resource type="Texture2D" uid="uid://bdgsa1hj0orv0" path="res://assets/player/jump_animation/mc_jump7.png" id="9_rxfqv"]
+[ext_resource type="Texture2D" uid="uid://5i32p0cnf2ke" path="res://assets/player/walk_animation/mc_walk5.png" id="10_5dj4n"]
+[ext_resource type="Texture2D" uid="uid://hocll3kd7xyh" path="res://assets/player/walk_animation/mc_walk6.png" id="11_g6jon"]
+[ext_resource type="Texture2D" uid="uid://i4imybm5ie5" path="res://assets/player/walk_animation/mc_walk7.png" id="12_uu3jy"]
+[ext_resource type="Texture2D" uid="uid://b1dy1dv250co2" path="res://assets/player/walk_animation/mc_walk8.png" id="13_papa5"]
+[ext_resource type="Texture2D" uid="uid://chdkc4yy01boh" path="res://assets/player/walk_animation/mc_walk9.png" id="14_wg77i"]
+[ext_resource type="AudioStream" uid="uid://f5x2xlx2v01c" path="res://heartbeat2.mp3" id="23_ukwyt"]
+[ext_resource type="AudioStream" uid="uid://cog2kyxyh0lkj" path="res://scenes/dash.mp3" id="24_ap6d5"]
+
+[sub_resource type="GDScript" id="GDScript_clhim"]
+script/source = "extends CharacterBody2D
+
+var sprite: AnimatedSprite2D
+var speed: float = 100
+var input_horizontal: float = 0.0
+var gravity: float = 1000.0
+var is_falling: bool = false
+var jump_velocity: float = -350.0
+var is_jumping: bool = false
+var coyote_timer: Timer
+var jump_timer: Timer
+
+func _ready() -> void:
+	sprite = $AnimatedSprite2D
+	coyote_timer = $CoyoteTimer
+	jump_timer = $JumpTimer
+
+func handle_horizontal_movement(body: CharacterBody2D, direction: float) -> void:
+	body.velocity.x = direction * speed
+
+func _process(_delta: float) -> void:
+	input_horizontal = Input.get_axis(\"move_left\", \"move_right\")
+
+
+func get_jump_input() -> bool:
+	return Input.is_action_just_pressed(\"jump\")
+
+
+func handle_gravity(body: CharacterBody2D, delta: float) -> void:
+	if not body.is_on_floor():
+		body.velocity.y += gravity * delta
+		
+
+	is_falling = body.velocity.y > 0 and not body.is_on_floor()
+
+func automatic_jump(body: CharacterBody2D, timer: Timer) -> void:
+	if body.is_on_floor():
+		if timer.wait_time - timer.time_left == 0:
+			body.velocity.y = jump_velocity
+	
+
+func handle_horizontal_flip(move_direction: float) -> void:
+	if move_direction == 0:
+		return
+
+	sprite.flip_h = false if move_direction > 0 else true
+
+
+func handle_move_animation(move_direction: float) -> void:
+	handle_horizontal_flip(move_direction)
+
+	sprite.play(\"walk\")
+
+
+func handle_jump_animation(jumping: bool, falling: bool) -> void:
+	if jumping:
+		sprite.play(\"jump\")
+	elif falling:
+		sprite.play(\"fall\")
+	
+func _physics_process(delta: float) -> void:
+	handle_gravity(self, delta)
+	handle_horizontal_movement(self, input_horizontal)
+	#handle_jump(self, get_jump_input())
+	handle_move_animation(input_horizontal)
+	handle_jump_animation(is_jumping, is_falling)
+
+	move_and_slide()
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_otutu"]
+radius = 6.0
+height = 12.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1hx3d"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_8fki2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_agddf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_erp7x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_f50q6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_oiab2")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_a0puq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_a0puq")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_w5m6h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_gxfl5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_glw4o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_i763t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_n77ga")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_w3nxg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_rxfqv")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_bui2a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_syu2d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nh70e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_2w3ah")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_5dj4n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_g6jon")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_uu3jy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_papa5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_wg77i")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_clhim")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+top_level = true
+shape = SubResource("CapsuleShape2D_otutu")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_1hx3d")
+animation = &"fall"
+speed_scale = 2.0
+
+[node name="CoyoteTimer" type="Timer" parent="."]
+wait_time = 0.15
+one_shot = true
+
+[node name="JumpTimer" type="Timer" parent="."]
+process_callback = 0
+autostart = true
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -1
+offset_left = -519.0
+offset_top = -380.0
+offset_right = 511.0
+offset_bottom = 369.0
+color = Color(1, 0.93, 0.93, 1)
+
+[node name="Heartbeat" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("23_ukwyt")
+pitch_scale = 1.25
+
+[node name="Dash" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("24_ap6d5")
